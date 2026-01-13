@@ -1,37 +1,33 @@
 # AStart (Batch A*)
 
-A high-performance, robust implementation of the **Batch A* (Frontier Reduction)** algorithm. This package features a **hybrid Python/C++ engine**, delivering **20x faster performance** while maintaining the ease of use of Python.
+A high-performance implementation of the Batch A* (Frontier Reduction) algorithm. This package features a hybrid Python/C++ engine, providing significant performance gains over pure Python implementations while maintaining a simple Python API.
 
-## 🌟 Why Batch A*?
+## Algorithm Overview
 
-Batch A* is a variation of A* designed to minimize **Priority Queue (Heap) overhead**. Instead of pushing every neighbor to the heap immediately, it performs a local "relaxation" search (Bellman-Ford style) for `k` steps.
+Batch A* is a variation of A* designed to minimize Priority Queue (Heap) overhead. Instead of pushing every neighbor to the heap immediately, it performs a local relaxation search for `k` steps before committing nodes to the global heap.
 
-### Key Advantages:
-1.  **🚀 Speed:** Reduces Heap `push`/`pop` operations by **1.2x - 12x**.
-2.  **🛡️ Robustness:** Proven to find optimal paths on complex graphs (e.g., with "Wormholes" or inconsistent heuristics) where Standard A* can return suboptimal results.
-3.  **🤖 Expensive Heuristics:** If your heuristic (`h(n)`) is slow (e.g., Neural Network or Physics check), Batch A* reduces calls by **10x+**.
+### Advantages
+1.  **Efficiency:** Reduces Heap operations by 1.2x - 12x.
+2.  **Robustness:** Finds optimal paths on complex graphs (e.g., with inconsistent heuristics) where standard A* with a closed set can return suboptimal results.
+3.  **Expensive Heuristics:** Reduces calls to the heuristic function by 10x+, which is ideal when the function involves complex computations.
 
----
-
-## 📦 Installation
+## Installation
 
 ```bash
 pip install .
 ```
-*Note: This automatically compiles the C++ backend. You need a C++ compiler (`g++` or `clang++`) installed.*
+A C++ compiler (g++ or clang++) is required to build the optimized backend.
 
----
+## Usage
 
-## 💻 Usage
+### Basic Usage (C++ Backend)
 
-### Basic Usage (Fast C++ Backend)
-
-By default, `AStart` uses the optimized C++ backend (Dijkstra mode, `h=0`) for maximum speed.
+By default, the solver uses the C++ backend for maximum speed.
 
 ```python
 from astart import AStart
 
-# 1. Define your graph (Dict of Dicts)
+# Define your graph (Dict of Dicts)
 graph = {
     'A': {'B': 1, 'C': 3},
     'B': {'D': 2},
@@ -39,58 +35,39 @@ graph = {
     'D': {}
 }
 
-# 2. Initialize Solver
+# Initialize Solver
 solver = AStart(graph) 
 
-# 3. Solve (k=10 lookahead)
+# Solve
 path = solver.solve('A', 'D', k=10)
 print(path) # ['A', 'C', 'D']
 ```
 
 ### Custom Heuristics (Python Fallback)
 
-If you need a custom heuristic function, the solver automatically falls back to the pure Python implementation.
+If a custom heuristic function is provided, the solver automatically falls back to the pure Python implementation.
 
 ```python
 def manhattan(u, goal):
     return abs(u[0] - goal[0]) + abs(u[1] - goal[1])
 
-# This will run in Python mode
 solver = AStart(grid_graph, heuristic_func=manhattan)
 ```
 
----
-
-## ⚡ Performance
+## Performance
 
 | Backend | Time (10k Nodes) | Speedup |
 | :--- | :--- | :--- |
-| **Pure Python** | ~0.030s | 1x |
-| **C++ Engine** | **~0.0015s** | **20x** |
+| Pure Python | ~0.030s | 1x |
+| C++ Engine | ~0.0015s | 20x |
 
-*(Benchmark run on M1 MacBook Pro, 100x100 Grid)*
+## Project Structure
 
----
-
-## 📂 Examples
-
-Check the `examples/` directory for verified scenarios:
-
-*   **`comparison.py`**: Performance comparison between Standard A* and Batch A*.
-*   **`complex_failure_case.py`**: Demonstrates how Batch A* solves "Wormhole" graphs where Standard A* fails.
-*   **`expensive_heuristic.py`**: Shows massive speedups when `h(n)` is computationally expensive.
-
----
-
-## 🔬 Standalone Benchmarks
-
-For research or porting, standalone implementations are available:
-
-*   **Rust:** `benchmarks/rust/` (Run with `cargo run --release`)
-*   **C++:** `benchmarks/cpp/` (Compile with `clang++ -O3`)
-
----
+*   `astart/`: Core package (Python wrapper and C++ source).
+*   `examples/`: Sample scripts for performance comparison and edge cases.
+*   `tests/`: Unit tests for verifying correctness.
+*   `benchmarks/`: Standalone Rust and C++ implementations for research.
 
 ## License
 
-MIT License. Free for open-source and commercial use.
+MIT
