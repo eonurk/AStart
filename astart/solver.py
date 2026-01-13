@@ -2,7 +2,6 @@ import heapq
 import ctypes
 import os
 import glob
-import sys
 from collections import defaultdict
 
 # --- C++ Backend Loader ---
@@ -35,11 +34,7 @@ try:
             ctypes.POINTER(ctypes.c_int), ctypes.c_int
         ]
         _cpp_lib.Solver_solve.restype = ctypes.c_int
-    else:
-        # print("Warning: C++ backend not found. Using pure Python.")
-        pass
-except Exception as e:
-    # print(f"Warning: Failed to load C++ backend: {e}")
+except Exception:
     pass
 
 
