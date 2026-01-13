@@ -13,20 +13,25 @@ Batch A* is a variation of the A* search algorithm designed to reduce the overhe
 
 ---
 
-## 🐍 Python Package
+## 🚀 Features
+
+*   **Dual Backend:** Automatically uses a high-performance **C++ engine** (20x faster) if available, falling back to pure Python.
+*   **Batch A* Algorithm:** Reduces Heap operations by 1.2x - 12x.
+*   **Robust:** Verified against complex graphs where standard A* heuristics fail.
 
 ### Installation
 
 ```bash
 pip install -e .
 ```
+*Note: A C++ compiler (g++ or clang++) is required for the optimized backend. The setup script will automatically compile it.*
 
 ### Usage
 
 ```python
 from astart import AStart
 
-# 1. Define your graph (Dict of Dicts)
+# 1. Define your graph
 graph = {
     'A': {'B': 1, 'C': 3},
     'B': {'D': 2},
@@ -34,44 +39,30 @@ graph = {
     'D': {}
 }
 
-# 2. Define Heuristic (Optional)
-# Use h=0 for Dijkstra behavior (guaranteed optimal on all graphs)
-def heuristic(u, goal):
-    return 0
+# 2. Initialize Solver
+# By default, it uses C++ (Dijkstra) if heuristic is None.
+# If you provide a custom heuristic function, it falls back to Python.
+solver = AStart(graph) 
 
 # 3. Solve
-solver = AStart(graph, heuristic)
 path = solver.solve('A', 'D', k=10)
 print(path) # ['A', 'C', 'D']
 ```
 
-### Examples
+## ⚡ Performance
 
-- `examples/comparison.py`: Compares Standard A* vs Batch A* on a random grid.
-- `examples/expensive_heuristic.py`: Demonstrates the speedup when the heuristic function is slow.
+On a 100x100 grid (10,000 nodes):
+*   **Pure Python:** ~0.030s
+*   **C++ Backend:** ~0.0015s (**20x Faster**)
 
 ---
 
-## ⚡ Benchmarks (C++ & Rust)
+## 🔬 Benchmarks
 
-This repository includes high-performance implementations to demonstrate the algorithm's raw efficiency.
-
-### C++
-
-Located in `benchmarks/cpp/`. Requires `clang++` or `g++`.
-
-```bash
-cd benchmarks/cpp
-clang++ -O3 main.cpp -o benchmark
-./benchmark
-```
-
-_Typical Result: ~12x reduction in Heap Pushes._
+The repository also includes standalone benchmarks for Rust and C++.
 
 ### Rust
-
-Located in `benchmarks/rust/`. Requires `cargo`.
-
+Located in `benchmarks/rust/`.
 ```bash
 cd benchmarks/rust
 cargo run --release
