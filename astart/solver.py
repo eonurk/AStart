@@ -85,8 +85,10 @@ class AStart:
     def __del__(self):
         if self._cpp_solver: _cpp_lib.Solver_delete(self._cpp_solver)
 
-    def solve(self, start, goal, k=5, adaptive=False):
-        return self._solve_cpp(start, goal, k, adaptive)
+    def solve(self, start, goal, k=1000, adaptive=False):
+        if self.use_cpp: return self._solve_cpp(start, goal, k, adaptive)
+        return None
+
 
     def solve_classic(self, start, goal):
         if start not in self._node_to_id or goal not in self._node_to_id: return None
